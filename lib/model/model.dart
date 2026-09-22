@@ -1,33 +1,52 @@
-
 class Task {
-  String title;
+  final String id;
+  final String title;
   bool isCompleted;
-  DateTime createdAt;
+  final DateTime createdAt;
+
+  final String? location;
+  final DateTime? dueDateTime;
+  final int notificationId;
 
   Task({
+    required this.id,
     required this.title,
     this.isCompleted = false,
-    DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+    required this.createdAt,
+    this.location,
+    this.dueDateTime,
+    required this.notificationId,
+  });
 
-  // Convert task into a Map for local storage
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'title': title,
       'isCompleted': isCompleted,
       'createdAt': createdAt.toIso8601String(),
+      'location': location,
+      'dueDateTime': dueDateTime?.toIso8601String(),
+      'notificationId': notificationId,
     };
   }
 
-  // Convert saved Map back into a Task
   factory Task.fromMap(Map<String, dynamic> map) {
     return Task(
-      title: map['title']?.toString() ?? '',
-      isCompleted: map['isCompleted'] == true,
+      id: map['id']?.toString() ??
+          DateTime.now().microsecondsSinceEpoch.toString(),
+      title: map['title'] ?? '',
+      isCompleted: map['isCompleted'] ?? false,
       createdAt: DateTime.tryParse(
             map['createdAt']?.toString() ?? '',
           ) ??
           DateTime.now(),
+      location: map['location'],
+      dueDateTime: map['dueDateTime'] == null
+          ? null
+          : DateTime.tryParse(map['dueDateTime'].toString()),
+      notificationId: map['notificationId'] is int
+          ? map['notificationId']
+          : DateTime.now().millisecondsSinceEpoch ~/ 1000,
     );
   }
 }
